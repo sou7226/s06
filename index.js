@@ -7,7 +7,7 @@ const prefix = process.env.prefix
 const roleID = process.env.ROLE_ID
 const funcs = require('./src/funcs');
 client.once('ready', () => console.log(`${client.user.displayName} is ${prefix}`));
-let Timeout = parseInt(process.env.Timeout);
+let Timeout = parseInt(process.env.Timeout)
 let SSRFlag = false, atkFlag = "::atk", ResetSSRFlag = true
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
 let time, targetChannelID
@@ -28,17 +28,16 @@ client.on("messageCreate", async (message) => {
             atkmsg = atkFlag
             atkcounter = 0;
             SSRFlag = false
+            Timeout = parseInt(process.env.Timeout)
             if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag) {
-                [SSRFlag, Timeout] = funcs.spawnSuperRareProcess(message, SSRFlag, roleID, Timeout)
-            }
-            if (SSRFlag && ResetSSRFlag) {
                 atkFlag = atkmsg
                 atkmsg = "::i f"
+                [SSRFlag, Timeout] = funcs.spawnSuperRareProcess(message, SSRFlag, roleID, Timeout)
             }
             await funcs.sendMessage(message, atkmsg)
             atkcounter++;
         }
-    } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag) {
+    } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag && !SSRFlag) {
         await funcs.UsedElixir(client, message, atkmsg, atkcounter)
     } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
         message.channel.send("::re")
