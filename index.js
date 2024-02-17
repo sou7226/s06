@@ -11,7 +11,7 @@ let Timeout = parseInt(process.env.Timeout);
 let SSRFlag = false, atkFlag = "::atk", ResetSSRFlag = true
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
 let time, targetChannelID
-let atkmsg = "::atk"
+let atkmsg = "::atk", atkcounter = 0;
 
 client.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) && message.guild.id.includes(guildIds)) return;
@@ -25,21 +25,23 @@ client.on("messageCreate", async (message) => {
     if (message.embeds.length > 0 && message.embeds[0].title) {
         const embedTitle = message.embeds[0].title
         if (embedTitle.includes("が待ち構えている")) {
-            if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag) {
+            atkmsg = atkFlag
+            atkcounter = 0;
+            SSRFlag = false
+            if (funcs.checkSSRRank(message.embeds[0].author.name) && !ResetSSRFlag) {
                 [SSRFlag, Timeout] = funcs.spawnSuperRareProcess(message, SSRFlag, roleID, Timeout)
             }
-            if (SSRFlag && ResetSSRFlag) {
+            if (SSRFlag && !ResetSSRFlag) {
                 atkFlag = atkmsg
                 atkmsg = "::i f"
             }
             await funcs.sendMessage(message, atkmsg)
-        } else if (embedTitle.includes("戦闘結果")) {
-            SSRFlag = false
-            atkmsg = atkFlag
-
+            atkcounter++;
         }
-    } else if (funcs.isKeepFighting(client, message)) {
-        await funcs.UsedElixir(client, message, atkmsg)
+    } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag) {
+        await funcs.UsedElixir(client, message, atkmsg, atkcounter)
+    } else if (funcs.isKeepFighting(client, message) && !ResetSSRFlag && SSRFlag) {
+        message.channel.send("::re")
     }
     time = setTimeout(() => message.channel?.send("::atk to"), Timeout)
 });
