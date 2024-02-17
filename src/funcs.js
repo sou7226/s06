@@ -5,8 +5,13 @@ const isKeepFighting = (client, message) => (
 );
 const sendMessage = async (message, content, ct = coolTime) => {
     await timeout(ct);
-    message.channel.send(content);
+    message.channel?.send(content);
 };
+const isFightFb = (client, message) => (
+    !message?.content.includes('を倒した！') &&
+    message?.content.includes(`${client.user.displayName}の攻撃！`) ||
+    message?.content.includes("倒すなら拳で語り合ってください。")
+);
 const coolTime = parseInt(process.env.coolTime)
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const SSRRanks = ["超激レア", "最強", "龍帝", "原初", "天使", "大地の覇者", "虚無", "ありがとう！", "闇の支配者"]
@@ -100,5 +105,6 @@ module.exports = {
     sendMessage: sendMessage,
     setChannel: setChannel,
     spawnSuperRareProcess: spawnSuperRareProcess,
-    UsedElixir: UsedElixir
+    UsedElixir: UsedElixir,
+    isFightFb: isFightFb
 };

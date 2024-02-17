@@ -37,12 +37,21 @@ client.on("messageCreate", async (message) => {
             await funcs.sendMessage(message, atkmsg)
             atkcounter++;
         }
-    } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag && !SSRFlag) {
-        await funcs.UsedElixir(client, message, atkmsg, atkcounter)
-    } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
-        message.channel.send("::re")
     }
-    time = setTimeout(() => message.channel?.send("::atk to"), Timeout)
+    if (atkmsg === "::atk") {
+        if (funcs.isKeepFighting(client, message) && ResetSSRFlag && !SSRFlag) {
+            await funcs.UsedElixir(client, message, atkmsg, atkcounter)
+        } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
+            message.channel?.send("::re")
+        }
+    }
+    if (atkmsg === "::i f") {
+        if (funcs.isFightFb(client, message)) {
+            await funcs.sendMessage(message, atkmsg)
+            atkcounter++;
+        }
+    }
+    time = setTimeout(() => message.channel?.send(`${atkmsg} to`), Timeout)
 });
 
 client.login(process.env.TOKEN);
