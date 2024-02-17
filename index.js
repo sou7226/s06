@@ -28,10 +28,10 @@ client.on("messageCreate", async (message) => {
             atkmsg = atkFlag
             atkcounter = 0;
             SSRFlag = false
-            if (funcs.checkSSRRank(message.embeds[0].author.name) && !ResetSSRFlag) {
+            if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag) {
                 [SSRFlag, Timeout] = funcs.spawnSuperRareProcess(message, SSRFlag, roleID, Timeout)
             }
-            if (SSRFlag && !ResetSSRFlag) {
+            if (SSRFlag && ResetSSRFlag) {
                 atkFlag = atkmsg
                 atkmsg = "::i f"
             }
@@ -40,7 +40,7 @@ client.on("messageCreate", async (message) => {
         }
     } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag) {
         await funcs.UsedElixir(client, message, atkmsg, atkcounter)
-    } else if (funcs.isKeepFighting(client, message) && !ResetSSRFlag && SSRFlag) {
+    } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
         message.channel.send("::re")
     }
     time = setTimeout(() => message.channel?.send("::atk to"), Timeout)
