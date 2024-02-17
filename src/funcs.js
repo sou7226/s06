@@ -37,8 +37,8 @@ async function UsedElixir(client, message, atkmsg) {
         await sendMessage(message, "::i e")
     }
 }
-async function moderate(client, message, prefix, atkmsg, targetChannelID) {
-    if (message.content.startsWith(`${prefix}say`)) {
+async function moderate(client, message, prefix, atkmsg) {
+    if (message.content.includes(`${prefix}say`)) {
         const channel = await client.channels.fetch(message.channel.id);
         channel.send(message.content.slice(prefix.length + 3));
     };
@@ -63,6 +63,9 @@ async function moderate(client, message, prefix, atkmsg, targetChannelID) {
         const msg = await message.channel.messages.fetch(args[0])
         await clickButton(msg, parseInt(args[1]), parseInt(args[2]))
     };
+    return atkmsg
+}
+async function setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg) {
     if (message.content === `${prefix}run`) {
         targetChannelID = message.channel.id;
         if (targetChannelID !== null) {
@@ -75,13 +78,17 @@ async function moderate(client, message, prefix, atkmsg, targetChannelID) {
             message.channel.send("```py\nend\n```")
         }
     }
-    return atkmsg, targetChannelID
+    if (message.content.includes(`${prefix}reset`)) {
+        ResetSSRFlag = ResetSSRFlag ? false : true
+        message.channel.send(`超激レアリセットモード ${ResetSSRFlag}`)
+    };
+    return [targetChannelID, ResetSSRFlag]
 }
 const spawnSuperRareProcess = (message, SSRFlag, roleID, Timeout) => {
     message.channel.send(`<@&${roleID}>`)
     SSRFlag = true
     Timeout = 60000 * 5
-    return SSRFlag, Timeout
+    return [SSRFlag, Timeout]
 }
 module.exports = {
     coolTime: coolTime,
@@ -91,6 +98,7 @@ module.exports = {
     checkSSRRank: checkSSRRank,
     moderate: moderate,
     sendMessage: sendMessage,
+    setChannel: setChannel,
     spawnSuperRareProcess: spawnSuperRareProcess,
     UsedElixir: UsedElixir
 };
