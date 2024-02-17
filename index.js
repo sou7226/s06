@@ -5,6 +5,7 @@ const { Client } = require('discord.js-selfbot-v13');
 const client = new Client({ checkUpdate: false });
 const guildIds = process.env.GUILD_IDs;
 const prefix = process.env.prefix
+const roleID = process.env.ROLE_ID
 const funcs = require('./src/funcs');
 client.once('ready', () => console.log(`${client.user.displayName} is ${prefix}`));
 let Timeout = parseInt(process.env.Timeout);
