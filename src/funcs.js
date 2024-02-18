@@ -9,8 +9,7 @@ const sendMessage = async (message, content, ct = coolTime) => {
 };
 const isFightFb = (client, message) => (
     !message?.content.includes('を倒した！') &&
-    message?.content.includes(`${client.user.displayName}の攻撃！`) ||
-    message?.content.includes("倒すなら拳で語り合ってください。")
+    message?.content.includes(`${client.user.displayName}の攻撃！`)
 );
 const coolTime = parseInt(process.env.coolTime)
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));

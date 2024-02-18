@@ -29,10 +29,18 @@ client.on("messageCreate", async (message) => {
             atkcounter = 0;
             SSRFlag = false
             Timeout = parseInt(process.env.Timeout)
-            if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag) {
+            if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag && !embedTitle.includes("狂気ネコしろまる")) {
                 atkFlag = atkmsg
                 atkmsg = "::i f"
-                [SSRFlag, Timeout] = funcs.spawnSuperRareProcess(message, SSRFlag, roleID, Timeout)
+                message.channel.send(`<@&${roleID}>`)
+                SSRFlag = true
+                Timeout = 60000 * 5
+            }
+
+            if (message.embeds[0].author.name &&
+                message.embeds[0].author.name.includes("超強敵")) {
+                atkFlag = atkmsg
+                atkmsg = "::i f"
             }
             await funcs.sendMessage(message, atkmsg)
             atkcounter++;
@@ -50,6 +58,10 @@ client.on("messageCreate", async (message) => {
             await funcs.sendMessage(message, atkmsg)
             atkcounter++;
         }
+    }
+    if (message?.content.includes("倒すなら拳で語り合ってください。") ||
+        message?.content.includes("倒したいなら魔法で..........")) {
+        await funcs.sendMessage(message, "::re")
     }
     time = setTimeout(() => message.channel?.send(`${atkmsg} to`), Timeout)
 });
