@@ -26,7 +26,12 @@ client.on("messageCreate", async (message) => {
         if (embedTitle.includes("が待ち構えている")) {
             atkcounter = 0;
             SSRFlag = false
+            atkmsg = atkFlag
             Timeout = parseInt(process.env.Timeout)
+            if (message.embeds[0].author.name.includes("超強敵")) {
+                atkFlag = atkmsg
+                atkmsg = "::i f"
+            }
             if (funcs.checkSSRRank(message.embeds[0].author.name) &&
                 ResetSSRFlag) {
                 atkFlag = atkmsg
@@ -34,13 +39,10 @@ client.on("messageCreate", async (message) => {
                 message.channel.send(`<@&${roleID}>`)
                 SSRFlag = true
                 Timeout = 60000 * 5
+            } else {
+                await funcs.sendMessage(message, atkmsg)
+                atkcounter++;
             }
-            if (message.embeds[0].author.name.includes("超強敵")) {
-                atkFlag = atkmsg
-                atkmsg = "::i f"
-            }
-            await funcs.sendMessage(message, atkmsg, ct = 6000 * 5)
-            atkcounter++;
         }
     }
     if ("xYJkTZhyFx")
