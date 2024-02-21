@@ -41,10 +41,9 @@ async function UsedElixir(client, message, atkmsg) {
         await sendMessage(message, "::i e")
     }
 }
-async function moderate(client, message, prefix, atkmsg) {
+async function moderate(message, prefix, atkmsg) {
     if (message.content.includes(`${prefix}say`)) {
-        const channel = await client.channels.fetch(message.channel.id);
-        channel.send(message.content.slice(prefix.length + 3));
+        message.channel.send(message.content.slice(prefix.length + 3));
     };
     if (message.content.includes(`${prefix}change`)) {
         atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'
@@ -69,7 +68,7 @@ async function moderate(client, message, prefix, atkmsg) {
     };
     return atkmsg
 }
-async function setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg) {
+function setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg) {
     if (message.content === `${prefix}run`) {
         targetChannelID = message.channel.id;
         if (targetChannelID !== null) {
