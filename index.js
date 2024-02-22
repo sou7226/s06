@@ -15,7 +15,7 @@ client.once('ready', () => console.log(`${client.user.displayName} is ${prefix}`
 
 client.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) || !guildIds.has(message.guild.id)) return;
-    [targetChannelID, ResetSSRFlag] = funcs.setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg)
+    [targetChannelID, ResetSSRFlag] = await funcs.setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg)
     if (message.content.startsWith(prefix)) {
         atkmsg = await funcs.moderate(message, prefix, atkmsg, targetChannelID, ResetSSRFlag);
     }
