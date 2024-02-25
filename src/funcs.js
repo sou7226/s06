@@ -13,7 +13,7 @@ const isFightFb = (client, message) => (
 );
 const coolTime = parseInt(process.env.coolTime)
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const SSRRanks = ["超激レア", "最強", "龍帝", "原初", "天使", "大地の覇者", "虚無", "ありがとう！", "闇の支配者"]
+const SSRRanks = ['最強', '闇の支配者', '大地の覇者', '龍帝', 'ありがとう！', '天使', '原初', '三女神', '超激レア']
 function checkSSRRank(text) {
     for (let i = 0; i < SSRRanks.length; i++) {
         if (text.includes(SSRRanks[i])) {
