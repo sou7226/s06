@@ -1,3 +1,4 @@
+const fs = require('fs');
 const isKeepFighting = (client, message) => (
     (message.content.includes(`${client.user.displayName}のHP:`) ||
         message.content.includes(`<@${client.user.id}>はもうやられている`)) &&
@@ -14,6 +15,12 @@ const isFightFb = (client, message) => (
 const coolTime = parseInt(process.env.coolTime)
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const SSRRanks = ['最強', '闇の支配者', '大地の覇者', '龍帝', 'ありがとう！', '天使', '原初', '三女神', '超激レア']
+const spawnSuperRareProcess = (message, SSRFlag, roleID, Timeout) => {
+    message.channel.send(`<@&${roleID}>`)
+    SSRFlag = true
+    Timeout = 60000 * 5
+    return [SSRFlag, Timeout]
+}
 function checkSSRRank(text) {
     for (let i = 0; i < SSRRanks.length; i++) {
         if (text.includes(SSRRanks[i])) {
@@ -21,6 +28,32 @@ function checkSSRRank(text) {
         }
     }
     return false;
+}
+function setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg) {
+    if (message.content === `${prefix}run`) {
+        targetChannelID = message.channel.id;
+        saveVariablesToFile(targetChannelID);
+        if (targetChannelID !== null) {
+            message.channel.send(`${atkmsg}`)
+        }
+    }
+    if (message.content === `${prefix}end`) {
+        targetChannelID = null;
+        saveVariablesToFile(targetChannelID);
+        if (targetChannelID === null) {
+            message.channel.send("```py\nend\n```")
+        }
+    }
+    if (message.content.includes(`${prefix}reset`)) {
+        ResetSSRFlag = ResetSSRFlag ? false : true
+        message.channel.send(`超激レアリセットモード ${ResetSSRFlag}`)
+    };
+    return [targetChannelID, ResetSSRFlag]
+}
+
+function saveVariablesToFile(targetChannelID) {
+    const data = `targetChannelID=${targetChannelID}`;
+    fs.writeFileSync('log.txt', data, 'utf-8');
 }
 async function UsedElixir(client, message, atkmsg) {
     if (
@@ -68,30 +101,31 @@ async function moderate(message, prefix, atkmsg) {
     };
     return atkmsg
 }
-function setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg) {
-    if (message.content === `${prefix}run`) {
-        targetChannelID = message.channel.id;
-        if (targetChannelID !== null) {
-            message.channel.send(`${atkmsg}`)
-        }
+async function loadVariablesFromFile(client) {
+    try {
+        const data = fs.readFileSync('log.txt', 'utf-8');
+        const lines = data.split('\n');
+        let targetChannelID;
+
+        lines.forEach(line => {
+            const [key, value] = line.split('=');
+
+            if (key && value) {
+                switch (key.trim()) {
+                    case 'targetChannelID':
+                        targetChannelID = value.trim().replace(/"/g, '');
+                        break;
+                }
+            }
+        });
+        try {
+            const channel = await client.channels.fetch(targetChannelID)
+            channel.send("::atk restart")
+        } catch (error) { console.error(error.message) }
+        return targetChannelID;
+    } catch (error) {
+        console.error('Error reading log.txt:', error.message);
     }
-    if (message.content === `${prefix}end`) {
-        targetChannelID = null;
-        if (targetChannelID === null) {
-            message.channel.send("```py\nend\n```")
-        }
-    }
-    if (message.content.includes(`${prefix}reset`)) {
-        ResetSSRFlag = ResetSSRFlag ? false : true
-        message.channel.send(`超激レアリセットモード ${ResetSSRFlag}`)
-    };
-    return [targetChannelID, ResetSSRFlag]
-}
-const spawnSuperRareProcess = (message, SSRFlag, roleID, Timeout) => {
-    message.channel.send(`<@&${roleID}>`)
-    SSRFlag = true
-    Timeout = 60000 * 5
-    return [SSRFlag, Timeout]
 }
 module.exports = {
     coolTime: coolTime,
@@ -104,5 +138,7 @@ module.exports = {
     setChannel: setChannel,
     spawnSuperRareProcess: spawnSuperRareProcess,
     UsedElixir: UsedElixir,
-    isFightFb: isFightFb
+    isFightFb: isFightFb,
+    saveVariablesToFile: saveVariablesToFile,
+    loadVariablesFromFile: loadVariablesFromFile
 };

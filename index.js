@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const { Client } = require('discord.js-selfbot-v13');
 const client = new Client({ checkUpdate: false });
 const prefix = process.env.prefix
@@ -11,11 +10,13 @@ let adminId = new Set(process.env.ADMIN_LIST.split(','));
 let guildIds = new Set(process.env.GUILD_IDS.split(','));
 let time, targetChannelID
 let atkmsg = "::atk", atkcounter = 0;
-client.once('ready', () => console.log(`${client.user.displayName} is ${prefix}`));
-
+client.once('ready', async () => {
+    console.log(`${client.user.displayName} is ${prefix}`)
+    targetChannelID = await funcs.loadVariablesFromFile(client);
+});
 client.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) || !guildIds.has(message.guild.id)) return;
-    [targetChannelID, ResetSSRFlag] = await funcs.setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg)
+    [targetChannelID, ResetSSRFlag] = funcs.setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg)
     if (message.content.startsWith(prefix)) {
         atkmsg = await funcs.moderate(message, prefix, atkmsg, targetChannelID, ResetSSRFlag);
     }
