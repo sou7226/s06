@@ -1,8 +1,7 @@
 const fs = require('fs');
 const isKeepFighting = (client, message) => (
-    (message.content.includes(`${client.user.displayName}のHP:`) ||
-        message.content.includes(`<@${client.user.id}>はもうやられている`)) &&
-    !message.content.includes('を倒した！')
+    (message.content.includes(`${client.user.displayName}のHP:`) &&
+        !message.content.includes('を倒した！'))
 );
 const sendMessage = async (message, content, ct = coolTime) => {
     await timeout(ct);
