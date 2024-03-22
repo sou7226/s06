@@ -37,7 +37,6 @@ client.on("messageCreate", async (message) => {
                 ResetSSRFlag) {
                 atkFlag = atkmsg
                 atkmsg = "::i f"
-                message.channel.send(`<@&${roleID}>`)
                 SSRFlag = true
                 Timeout = 60000 * 5
             } else {
