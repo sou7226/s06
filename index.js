@@ -20,8 +20,7 @@ client.on("messageCreate", async (message) => {
     if (message.content.startsWith(prefix)) {
         atkmsg = await funcs.moderate(message, prefix, atkmsg, targetChannelID, ResetSSRFlag);
     }
-    if (!targetChannelID || targetChannelID !== message.channel.id) return;
-    clearTimeout(time);
+    if (targetChannelID !== message.channel.id) return;
     if (message.embeds.length > 0 && message.embeds[0].title) {
         const embedTitle = message.embeds[0].title
         if (embedTitle.includes("が待ち構えている")) {
@@ -44,24 +43,26 @@ client.on("messageCreate", async (message) => {
                 atkcounter++;
             }
         }
-    }
-    if (message?.content.includes("倒すなら拳で語り合ってください。") ||
+        clearTimeout(time);
+    } else if (message?.content.includes("倒すなら拳で語り合ってください。") ||
         message?.content.includes("倒したいなら魔法で..........")) {
         await funcs.sendMessage(message, "::re")
-    } else if (atkmsg === "::atk") {
-        if (funcs.isKeepFighting(client, message) && ResetSSRFlag && !SSRFlag) {
-            await funcs.UsedElixir(client, message, atkmsg, atkcounter)
-        } else if (funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
-            message.channel?.send("::re")
-        }
-    } else if (atkmsg === "::i f") {
-        if (funcs.isFightFb(client, message)) {
-            await funcs.sendMessage(message, atkmsg)
-            atkcounter++;
-        } else if (message.content.includes(`<@${client.user.id}>はもうやられている`) && ResetSSRFlag && !SSRFlag) {
-            await funcs.UsedElixir(client, message, atkmsg, atkcounter)
-        }
+        clearTimeout(time);
+    } else if (atkmsg === "::atk" && funcs.isKeepFighting(client, message) && ResetSSRFlag && !SSRFlag) {
+        await funcs.UsedElixir(client, message, atkmsg, atkcounter)
+        clearTimeout(time);
+    } else if (atkmsg === "::atk" && funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
+        message.channel?.send("::re")
+        clearTimeout(time);
+    } else if (atkmsg === "::i f" && funcs.isFightFb(client, message)) {
+        await funcs.sendMessage(message, atkmsg)
+        atkcounter++;
+        clearTimeout(time);
+    } else if (atkmsg === "::i f" && message.content.includes(`<@${client.user.id}>はもうやられている`) && ResetSSRFlag && !SSRFlag) {
+        await funcs.UsedElixir(client, message, atkmsg, atkcounter)
+        clearTimeout(time);
     }
     time = setTimeout(() => message.channel?.send(`${atkmsg} to`), Timeout)
+
 });
 client.login(process.env.TOKEN);
