@@ -1,4 +1,5 @@
 const fs = require('fs');
+const coolTime = parseInt(process.env.coolTime)
 const isKeepFighting = (client, message) => (
     (message.content.includes(`${client.user.displayName}のHP:`) &&
         !message.content.includes('を倒した！'))
@@ -11,7 +12,6 @@ const isFightFb = (client, message) => (
     !message?.content.includes('を倒した！') &&
     message?.content.includes(`${client.user.displayName}の攻撃！`)
 );
-const coolTime = parseInt(process.env.coolTime)
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const SSRRanks = ['最強', '闇の支配者', '大地の覇者', '龍帝', 'ありがとう！', '天使', '原初', '三女神', '超激レア']
 const spawnSuperRareProcess = (message, SSRFlag, roleID, Timeout) => {
