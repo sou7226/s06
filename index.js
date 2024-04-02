@@ -3,63 +3,74 @@ const { Client } = require('discord.js-selfbot-v13');
 const client = new Client({ checkUpdate: false });
 const prefix = process.env.prefix
 const funcs = require('./src/funcs');
-let Timeout = parseInt(process.env.Timeout)
-let SSRFlag = false, atkFlag = "::atk", ResetSSRFlag = true
+
+let ResetSSRFlag = true;
+let SSRFlag = false;
+let atkFlag = "::atk";
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
 let guildIds = new Set(process.env.GUILD_IDS.split(','));
-let time, targetChannelID
-let atkMsg = "::atk", atkCounter = 0;
+let Timeout = parseInt(process.env.Timeout);
+let time;
+let targetChannelID;
+let attackMessage = "::atk";
+let attackCounter = 0;
+
 client.once('ready', async () => {
     console.log(`${client.user.displayName} is ${prefix}`)
     targetChannelID = await funcs.loadVariablesFromFile(client);
 });
+
 client.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) || !guildIds.has(message.guild.id)) return;
-    [targetChannelID, ResetSSRFlag] = funcs.setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkMsg)
+    [targetChannelID, ResetSSRFlag] = funcs.setChannel(prefix, message, targetChannelID, ResetSSRFlag, attackMessage)
+
     if (message.content.startsWith(prefix)) {
-        atkMsg = await funcs.moderate(message, prefix, atkMsg, targetChannelID, ResetSSRFlag);
+        attackMessage = await funcs.moderate(message, prefix, attackMessage, targetChannelID, ResetSSRFlag);
     }
+
     if (targetChannelID !== message.channel.id) return;
     clearTimeout(time);
+
     if (message.embeds.length > 0 && message.embeds[0].title) {
         const embedTitle = message.embeds[0].title
         if (embedTitle.includes("が待ち構えている")) {
-            atkCounter = 0;
+            attackCounter = 0;
             if (SSRFlag) {
                 await funcs.sendMessage(message, "::luna")
                 SSRFlag = false
             }
-            atkMsg = atkFlag
+            attackMessage = atkFlag
             Timeout = parseInt(process.env.Timeout)
             if (message.embeds[0].author.name.includes("超強敵")) {
-                atkFlag = atkMsg
-                atkMsg = "::i f"
+                atkFlag = attackMessage
+                attackMessage = "::i f"
             }
-            if (funcs.checkSSRRank(message.embeds[0].author.name) &&
-                ResetSSRFlag) {
-                atkFlag = atkMsg
-                atkMsg = "::i f"
+            if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag &&
+                !embedTitle.includes("狂気ネコしろまる")) {
+                atkFlag = attackMessage
+                attackMessage = "::i f"
                 SSRFlag = true
                 Timeout = 60000 * 5
             } else {
-                await funcs.sendMessage(message, atkMsg)
-                atkCounter++;
+                await funcs.sendMessage(message, attackMessage)
+                attackCounter++;
             }
         }
     } else if (message?.content.includes("倒すなら拳で語り合ってください。") ||
-        message?.content.includes("倒したいなら魔法で..........")) {
+        message?.content.includes("倒したいなら魔法で..........") ||
+        message?.content.includes("この敵には攻撃は不可能のようだ")) {
         await funcs.sendMessage(message, "::re")
-    } else if (atkMsg === "::atk" && funcs.isKeepFighting(client, message) && ResetSSRFlag && !SSRFlag) {
-        await funcs.UsedElixir(client, message, atkMsg, atkCounter)
-    } else if (atkMsg === "::atk" && funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
+    } else if (attackMessage === "::atk" && funcs.isKeepFighting(client, message) && ResetSSRFlag && !SSRFlag) {
+        await funcs.UsedElixir(client, message, attackMessage, attackCounter)
+    } else if (attackMessage === "::atk" && funcs.isKeepFighting(client, message) && ResetSSRFlag && SSRFlag) {
         message.channel?.send("::re")
-    } else if (atkMsg === "::i f" && funcs.isFightFb(client, message)) {
-        await funcs.sendMessage(message, atkMsg)
-        atkCounter++;
-    } else if (atkMsg === "::i f" && message.content.includes(`<@${client.user.id}>はもうやられている`) && ResetSSRFlag && !SSRFlag) {
-        await funcs.UsedElixir(client, message, atkMsg, atkCounter)
+    } else if (attackMessage === "::i f" && funcs.isFightFb(client, message)) {
+        await funcs.sendMessage(message, attackMessage)
+        attackCounter++;
+    } else if (attackMessage === "::i f" && message.content.includes(`<@${client.user.id}>はもうやられている`) && ResetSSRFlag && !SSRFlag) {
+        await funcs.UsedElixir(client, message, attackMessage, attackCounter)
     }
-    time = setTimeout(() => message.channel?.send(`${atkMsg} to`), Timeout)
+    time = setTimeout(() => message.channel?.send(`${attackMessage} to`), Timeout)
 
 });
 client.login(process.env.TOKEN);

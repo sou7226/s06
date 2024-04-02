@@ -13,7 +13,7 @@ const isFightFb = (client, message) => (
     message?.content.includes(`${client.user.displayName}の攻撃！`)
 );
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const SSRRanks = ['最強', '闇の支配者', '大地の覇者', '龍帝', 'ありがとう！', '天使', '原初', '三女神', '超激レア']
+const SSRRanks = ["三女神", "超激レア", "最強", "龍帝", "原初", "天使", "大地の覇者", "虚無", "ありがとう！", "闇の支配者", "殿堂"]
 const spawnSuperRareProcess = (message, SSRFlag, roleID, Timeout) => {
     message.channel.send(`<@&${roleID}>`)
     SSRFlag = true
