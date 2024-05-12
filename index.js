@@ -49,7 +49,7 @@ client.on("messageCreate", async (message) => {
                 atkFlag = attackMessage
                 attackMessage = "::i f"
                 SSRFlag = true
-                Timeout = !embedTitle.includes("狂気ネコしろまる") ? parseInt(process.env.Timeout) : 60000 * 5;
+                Timeout = embedTitle.includes("狂気ネコしろまる") ? parseInt(process.env.Timeout) : 60000 * 5;
             } else {
                 await funcs.sendMessage(message, attackMessage)
                 attackCounter++;
