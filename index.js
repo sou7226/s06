@@ -45,12 +45,11 @@ client.on("messageCreate", async (message) => {
                 atkFlag = attackMessage
                 attackMessage = "::i f"
             }
-            if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag &&
-                !embedTitle.includes("狂気ネコしろまる")) {
+            if (funcs.checkSSRRank(message.embeds[0].author.name) && ResetSSRFlag) {
                 atkFlag = attackMessage
                 attackMessage = "::i f"
                 SSRFlag = true
-                Timeout = 60000 * 5
+                Timeout = !embedTitle.includes("狂気ネコしろまる") ? parseInt(process.env.Timeout) : 60000 * 5;
             } else {
                 await funcs.sendMessage(message, attackMessage)
                 attackCounter++;
