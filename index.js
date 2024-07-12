@@ -73,3 +73,8 @@ client.on("messageCreate", async (message) => {
 
 });
 client.login(process.env.TOKEN);
+
+process.on('uncaughtException', error => {
+    console.error('エラー発生、プロセスを終了:', error);
+    process.exit(1);
+});

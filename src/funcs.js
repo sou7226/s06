@@ -36,6 +36,11 @@ function setChannel(prefix, message, targetChannelID, ResetSSRFlag, atkmsg) {
             message.channel.send(`${atkmsg}`)
         }
     }
+    if (message.content === `sl@debug` || message.content === `${prefix}debug`) {
+        message.channel.send("プロセスを停止します")
+        process.exit(1);
+
+    }
     if (message.content === `${prefix}end`) {
         targetChannelID = null;
         saveVariablesToFile(targetChannelID);
