@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client } = require('discord.js-selfbot-v13');
+const { Client } = require('discord.js');
 const client = new Client({ checkUpdate: false });
 const prefix = process.env.prefix
 const funcs = require('./src/funcs');
