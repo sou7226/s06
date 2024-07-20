@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client } = require('discord.js');
+const { Client } = require('discord.js-selfbot-v13');
 const client = new Client({ checkUpdate: false });
 const prefix = process.env.prefix
 const funcs = require('./src/funcs');
@@ -66,8 +66,8 @@ client.on("messageCreate", async (message) => {
     } else if (attackMessage === "::i f" && funcs.isFightFb(client, message)) {
         await funcs.sendMessage(message, attackMessage)
         attackCounter++;
-    } else if (attackMessage === "::i f" && message.content.includes(`<@${client.user.id}>はもうやられている`) && ResetSSRFlag && !SSRFlag) {
-        await funcs.UsedElixir(client, message, attackMessage, attackCounter)
+    } else if (message.content.includes(`<@${client.user.id}>はもうやられている`)) {
+        await funcs.sendMessage(message, "::i e")
     }
     time = setTimeout(() => message.channel?.send(`${attackMessage} to`), Timeout)
 
